@@ -12,13 +12,14 @@ public class PlayerController : MonoBehaviour
     private ObstacleController obstacleController;
     private float points;
     public float forceJump;
-    private new Rigidbody2D rigidbody2D;
+    private Rigidbody2D rb2D;
     private Animator animator;
     private BoxCollider2D[] boxes;
     private bool firstCollision;
     private bool isgrounded;
     private int timeScale;
     private float EPSLON = 0.001f;
+    private float alpha = 0.001f;
 
     void Start()
     {
@@ -32,7 +33,7 @@ public class PlayerController : MonoBehaviour
         outIntern = new float[2];
         outExtern = new float[3];
         points = 0;
-        rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
+        rb2D = gameObject.GetComponent<Rigidbody2D>();
         boxes = gameObject.GetComponents<BoxCollider2D>();
         boxes[0].enabled = true;
         boxes[1].enabled = false;
@@ -86,7 +87,7 @@ public class PlayerController : MonoBehaviour
             //Deve pular
             if (isgrounded)
             {
-                rigidbody2D.AddForce(new Vector3(0, forceJump, 0), ForceMode2D.Impulse);
+                rb2D.AddForce(new Vector3(0, forceJump, 0), ForceMode2D.Impulse);
             }
             boxes[0].enabled = true;
             boxes[1].enabled = false;
@@ -101,7 +102,7 @@ public class PlayerController : MonoBehaviour
             //Deve se abaixar
             if (!isgrounded)
             {
-                rigidbody2D.AddForce(new Vector3(0, -forceJump, 0), ForceMode2D.Impulse);
+                rb2D.AddForce(new Vector3(0, -forceJump, 0), ForceMode2D.Impulse);
             }
             boxes[0].enabled = false;
             boxes[1].enabled = true;
@@ -163,9 +164,9 @@ public class PlayerController : MonoBehaviour
             deltaks[2] = (0.6f - outExtern[2]) * DotFunctionTransfer(net5); // Agachar
         }
 
-        theta[2] = theta[2] + 0.0001f * deltaks[0];
-        theta[3] = theta[3] + 0.0001f * deltaks[1];
-        theta[4] = theta[4] + 0.0001f * deltaks[2];
+        theta[2] = theta[2] + alpha * deltaks[0];
+        theta[3] = theta[3] + alpha * deltaks[1];
+        theta[4] = theta[4] + alpha * deltaks[2];
 
 
         float[] Er = new float[3];
@@ -180,29 +181,29 @@ public class PlayerController : MonoBehaviour
             delta0[0] = DotFunctionTransfer(net1) * (deltaks[0] * weights[10] + deltaks[1] * weights[12] + deltaks[2] * weights[14]);
             delta0[1] = DotFunctionTransfer(net2) * (deltaks[0] * weights[11] + deltaks[1] * weights[13] + deltaks[2] * weights[15]);
 
-            weights[0] = weights[0] + 0.0001f * delta0[0] * d;
-            weights[1] = weights[1] + 0.0001f * delta0[0] * h;
-            weights[2] = weights[2] + 0.0001f * delta0[0] * s;
-            weights[3] = weights[3] + 0.0001f * delta0[0] * w;
-            weights[4] = weights[4] + 0.0001f * delta0[0] * hJ;
+            weights[0] = weights[0] + alpha * delta0[0] * d;
+            weights[1] = weights[1] + alpha * delta0[0] * h;
+            weights[2] = weights[2] + alpha * delta0[0] * s;
+            weights[3] = weights[3] + alpha * delta0[0] * w;
+            weights[4] = weights[4] + alpha * delta0[0] * hJ;
 
-            weights[5] = weights[5] + 0.0001f * delta0[1] * d;
-            weights[6] = weights[6] + 0.0001f * delta0[1] * h;
-            weights[7] = weights[7] + 0.0001f * delta0[1] * s;
-            weights[8] = weights[8] + 0.0001f * delta0[1] * w;
-            weights[9] = weights[9] + 0.0001f * delta0[1] * hJ;
+            weights[5] = weights[5] + alpha * delta0[1] * d;
+            weights[6] = weights[6] + alpha * delta0[1] * h;
+            weights[7] = weights[7] + alpha * delta0[1] * s;
+            weights[8] = weights[8] + alpha * delta0[1] * w;
+            weights[9] = weights[9] + alpha * delta0[1] * hJ;
 
-            weights[10] = weights[10] + 0.0001f * deltaks[0] * outIntern[0];
-            weights[11] = weights[11] + 0.0001f * deltaks[0] * outIntern[1];
+            weights[10] = weights[10] + alpha * deltaks[0] * outIntern[0];
+            weights[11] = weights[11] + alpha * deltaks[0] * outIntern[1];
 
-            weights[12] = weights[12] + 0.0001f * deltaks[1] * outIntern[0];
-            weights[13] = weights[13] + 0.0001f * deltaks[1] * outIntern[1];
+            weights[12] = weights[12] + alpha * deltaks[1] * outIntern[0];
+            weights[13] = weights[13] + alpha * deltaks[1] * outIntern[1];
 
-            weights[14] = weights[14] + 0.0001f * deltaks[2] * outIntern[0];
-            weights[15] = weights[15] + 0.0001f * deltaks[2] * outIntern[1];
+            weights[14] = weights[14] + alpha * deltaks[2] * outIntern[0];
+            weights[15] = weights[15] + alpha * deltaks[2] * outIntern[1];
 
-            theta[0] = theta[0] + 0.0001f * delta0[0];
-            theta[1] = theta[1] + 0.0001f * delta0[1];
+            theta[0] = theta[0] + alpha * delta0[0];
+            theta[1] = theta[1] + alpha * delta0[1];
         }
     }
 
